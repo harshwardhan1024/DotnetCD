@@ -1,0 +1,36 @@
+name: Deploy App
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  AZURE_WEBAPP_NAME: az-test-run
+  AZURE_WEBAPP_PATH: './DotnetCD'
+  DOTNET_VERSION: '5.0.100'
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest
+    steps:
+
+      - uses: actions/checkout@v2
+      
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Install Dependencies
+        run: dotnet restore
+
+      - name: Publish
+        run: dotnet publish -c Release --no-restore -o '${{ env.AZURE_WEBAPP_PATH }}'
+          
+      - name: 'Deploy'
+        uses: azure/webapps-deploy@v2
+        with: 
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.PUBLISH_PROFILE  }}
+          package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
