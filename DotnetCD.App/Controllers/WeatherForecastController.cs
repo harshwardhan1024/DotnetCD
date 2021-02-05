@@ -35,5 +35,11 @@ namespace DotnetCD.App.Controllers
 			})
 			.ToArray();
 		}
+
+		[HttpGet]
+		public IActionResult SayHello()
+		{
+			return Ok("Hello");
+		}
 	}
 }
