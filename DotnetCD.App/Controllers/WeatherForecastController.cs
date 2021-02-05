@@ -36,7 +36,7 @@ namespace DotnetCD.App.Controllers
 			.ToArray();
 		}
 
-		[HttpGet]
+		[HttpGet("[action]")]
 		public IActionResult SayHello()
 		{
 			return Ok("Hello");
