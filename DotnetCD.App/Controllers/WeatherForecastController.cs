@@ -41,5 +41,11 @@ namespace DotnetCD.App.Controllers
 		{
 			return Ok("Hello");
 		}
+
+		[HttpGet("[action]")]
+		public IActionResult GoodNight()
+		{
+			return Ok("Good Night");
+		}
 	}
 }
