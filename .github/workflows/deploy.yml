@@ -6,7 +6,6 @@ on:
       - master
 
 env:
-  AZURE_WEBAPP_NAME: az-test-run
   AZURE_WEBAPP_PATH: './DotnetCD'
   DOTNET_VERSION: '5.0.100'
 
@@ -31,6 +30,6 @@ jobs:
       - name: 'Deploy'
         uses: azure/webapps-deploy@v2
         with: 
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.PUBLISH_PROFILE  }}
           package: '${{ env.AZURE_WEBAPP_PATH }}'
