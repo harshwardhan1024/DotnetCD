@@ -2,3 +2,7 @@ bin
 obj
 .vs
 .vscode
+.terraform
+*.tfstate
+*.tfstate.*
+.terraform.*

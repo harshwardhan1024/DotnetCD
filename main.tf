@@ -11,4 +11,6 @@ provider "random" {
 
 }
 
+resource "random_uuid" "uuid" {}
+
 resource "random_pet" "pet" {}
