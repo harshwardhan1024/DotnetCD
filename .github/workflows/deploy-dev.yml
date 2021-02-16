@@ -19,6 +19,9 @@ jobs:
           
       - name: Terraform Init
         run: terraform init
+        
+      - name: Terraform Apply
+        run: terraform apply --auto-approve
 
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
