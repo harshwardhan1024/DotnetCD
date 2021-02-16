@@ -25,7 +25,7 @@ jobs:
         run: terraform apply --auto-approve
         
       - name: Terraform result output
-        run: echo ${{ steps.tf_apply.outputs.stdout }}
+        run: echo "${{ steps.tf_apply.outputs.stdout }}"
 
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
