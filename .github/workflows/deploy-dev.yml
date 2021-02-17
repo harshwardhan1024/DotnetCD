@@ -31,14 +31,16 @@ jobs:
       - id: uuid_output
         run: echo "::set-output name=uuid::$(terraform output o_uuid)"
         
-# Pass output to next job and output it
-# Perform terraform login to Azure
+# Use azurerm provider and perform terraform login to Azure
         
   build-and-deploy:
     needs: setup-infra
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
+          
+      - name: setup-infra Result
+        run: echo "${{ needs.setup-infra.outputs.pet_name }} ${{ needs.setup-infra.outputs.uuid }}"
 
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
