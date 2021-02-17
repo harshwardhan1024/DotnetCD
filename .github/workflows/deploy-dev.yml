@@ -12,6 +12,9 @@ env:
 jobs:
   setup-infra:
     runs-on: ubuntu-latest
+    outputs: 
+      pet_name: ${{ steps.pet_name_output.outputs.pet_name }}
+      uuid: ${{ steps.uuid_output.outputs.uuid }}
     steps:
       - uses: hashicorp/setup-terraform@v1
       - uses: actions/checkout@v2
@@ -20,7 +23,16 @@ jobs:
         run: terraform init
       
       - name: Terraform Apply
-        run: terraform apply --auto-approve 
+        run: terraform apply --auto-approve
+        
+      - id: pet_name_output
+        run: echo "::set-output name=pet_name::${{ terraform output o_pet_name }}"
+        
+      - id: uuid_output
+        run: echo "::set-output name=uuid::${{ terraform output o_uuid }}"
+        
+# Pass output to next job and output it
+# Perform terraform login to Azure
         
   build-and-deploy:
     needs: setup-infra
