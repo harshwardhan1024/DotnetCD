@@ -10,22 +10,22 @@ env:
   DOTNET_VERSION: '5.0.x'
 
 jobs:
-  build-and-deploy:
-    runs-on: windows-latest
+  setup-infra:
+    runs-on: ubuntu-latest
     steps:
-
-      - uses: actions/checkout@v2
       - uses: hashicorp/setup-terraform@v1
-          
+
       - name: Terraform Init
         run: terraform init
+      
+      - name: Terraform Apply
+        run: terraform apply --auto-approve 
         
-      - id: tf_apply
-        name: Terraform Apply
-        run: terraform apply --auto-approve
-        
-      - name: Terraform result output
-        run: echo "${{ steps.tf_apply.outputs.stdout }}"
+  build-and-deploy:
+    needs: setup-infra
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
 
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
