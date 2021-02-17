@@ -26,10 +26,10 @@ jobs:
         run: terraform apply --auto-approve
         
       - id: pet_name_output
-        run: echo "::set-output name=pet_name::${{ terraform output o_pet_name }}"
+        run: echo "::set-output name=pet_name::$(terraform output o_pet_name)"
         
       - id: uuid_output
-        run: echo "::set-output name=uuid::${{ terraform output o_uuid }}"
+        run: echo "::set-output name=uuid::$(terraform output o_uuid)"
         
 # Pass output to next job and output it
 # Perform terraform login to Azure
