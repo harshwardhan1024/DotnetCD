@@ -17,6 +17,8 @@ jobs:
       uuid: ${{ steps.uuid_output.outputs.uuid }}
     steps:
       - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_wrapper: false
       - uses: actions/checkout@v2
 
       - name: Terraform Init
