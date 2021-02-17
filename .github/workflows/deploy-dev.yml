@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: hashicorp/setup-terraform@v1
+      - uses: actions/checkout@v2
 
       - name: Terraform Init
         run: terraform init
@@ -46,4 +47,4 @@ jobs:
         with:
           app-name: ${{ secrets.AZURE_WEBAPP_NAME_DEV }}
           publish-profile: ${{ secrets.PUBLISH_PROFILE_DEV }}
-          package: '${{ env.AZURE_WEBAPP_PATH }}'
+          package: ${{ env.AZURE_WEBAPP_PATH }}
