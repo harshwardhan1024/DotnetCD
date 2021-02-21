@@ -23,6 +23,9 @@ jobs:
 
       - name: Terraform Init
         run: terraform init
+        
+      - name: Terraform Workspace Select
+        run: terraform workspace select dev || terraform workspace new dev
       
       - name: Terraform Apply
         run: terraform apply --auto-approve
@@ -59,7 +62,7 @@ jobs:
       - name: Publish
         run: dotnet publish -c Release --no-restore -o '${{ env.AZURE_WEBAPP_PATH }}'
 
-      - name: 'Deploy'
+      - name: Deploy
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ secrets.AZURE_WEBAPP_NAME_DEV }}
