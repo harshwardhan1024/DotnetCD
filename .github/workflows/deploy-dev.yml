@@ -36,7 +36,6 @@ jobs:
       - id: uuid_output
         run: echo "::set-output name=uuid::$(terraform output o_uuid)"
 
-# Setup workspace so that the output of terraform remains same 
 # Use azurerm provider and perform terraform login to Azure
         
   build-and-deploy:
