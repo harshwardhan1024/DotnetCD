@@ -43,5 +43,6 @@ resource "azurerm_app_service" "as" {
 
     site_config {
         dotnet_framework_version = "v5.0"
+        use_32_bit_worker_process = true
     }
 }
