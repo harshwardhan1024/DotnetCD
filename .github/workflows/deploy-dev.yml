@@ -35,10 +35,13 @@ jobs:
       - name: Terraform Apply
         run: terraform apply --auto-approve
 
+      - id: terraform_output
+        run: echo "::set-output name=app_service_name::$(terraform output app_service_name)"
+
       - id: app_service_name
         uses: ASzc/change-string-case-action@v1
         with:
-            string: $(terraform output app_service_name)
+            string: ${{ steps.terraform_output.outputs.app_service_name }}
         
   build-and-deploy:
     needs: setup-infra
