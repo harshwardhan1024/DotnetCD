@@ -66,8 +66,8 @@ jobs:
       - name: Deploy
         uses: azure/webapps-deploy@v2
         with:
-          app-name: ${{ needs.setup-infra.outputs.app_service_name }}
-          package: ${{ env.AZURE_WEBAPP_PATH }}
+          app-name: '${{ needs.setup-infra.outputs.app_service_name }}'
+          package: '${{ env.AZURE_WEBAPP_PATH }}'
       
       - name: Azure Logout
         run: az logout
