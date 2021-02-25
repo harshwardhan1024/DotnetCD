@@ -9,12 +9,17 @@ env:
   AZURE_WEBAPP_PATH: './DotnetCD'
   DOTNET_VERSION: '5.0.x'
 
+  # For Terraform's azurerm provider
+  ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+
 jobs:
   setup-infra:
     runs-on: ubuntu-latest
     outputs: 
-      pet_name: ${{ steps.pet_name_output.outputs.pet_name }}
-      uuid: ${{ steps.uuid_output.outputs.uuid }}
+      app_service_name: ${{ steps.app_service_name.outputs.app_service_name }}
     steps:
       - uses: hashicorp/setup-terraform@v1
         with:
@@ -29,23 +34,15 @@ jobs:
       
       - name: Terraform Apply
         run: terraform apply --auto-approve
-        
-      - id: pet_name_output
-        run: echo "::set-output name=pet_name::$(terraform output o_pet_name)"
-        
-      - id: uuid_output
-        run: echo "::set-output name=uuid::$(terraform output o_uuid)"
 
-# Use azurerm provider and perform terraform login to Azure
+      - id: app_service_name
+        run: echo "::set-output name=app_service_name::$(terraform output app_service_name)"
         
   build-and-deploy:
     needs: setup-infra
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
-          
-      - name: setup-infra Result
-        run: echo "${{ needs.setup-infra.outputs.pet_name }} ${{ needs.setup-infra.outputs.uuid }}"
 
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
@@ -60,10 +57,17 @@ jobs:
 
       - name: Publish
         run: dotnet publish -c Release --no-restore -o '${{ env.AZURE_WEBAPP_PATH }}'
+        
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDS }}
 
       - name: Deploy
         uses: azure/webapps-deploy@v2
         with:
-          app-name: ${{ secrets.AZURE_WEBAPP_NAME_DEV }}
-          publish-profile: ${{ secrets.PUBLISH_PROFILE_DEV }}
+          app-name: ${{ needs.setup-infra.outputs.app_service_name }}
           package: ${{ env.AZURE_WEBAPP_PATH }}
+      
+      - name: Azure Logout
+        run: az logout

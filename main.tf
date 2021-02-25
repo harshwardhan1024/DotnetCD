@@ -15,10 +15,33 @@
   }
 }
 
-provider "random" {
-
+provider "azurerm" {
+    features {}
 }
 
-resource "random_uuid" "uuid" {}
+resource "azurerm_resource_group" "rg" {
+    name = "DotnetCD-RG"
+    location = "Central India"
+}
 
-resource "random_pet" "pet" {}
+resource "azurerm_app_service_plan" "asp" {
+    name = "DotnetCD-ASP"
+    location = azurerm_resource_group.rg.location
+    resource_group_name = azurerm_resource_group.rg.name
+
+    sku {
+        tier = "Free"
+        size = "F1"
+    }
+}
+
+resource "azurerm_app_service" "as" {
+    name                = "DotnetCD-AS"
+    location            = azurerm_resource_group.rg.location
+    resource_group_name = azurerm_resource_group.rg.name
+    app_service_plan_id = azurerm_app_service_plan.asp.id
+
+    site_config {
+        dotnet_framework_version = "v5.0"
+    }
+}
