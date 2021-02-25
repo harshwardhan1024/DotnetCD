@@ -19,7 +19,7 @@ jobs:
   setup-infra:
     runs-on: ubuntu-latest
     outputs: 
-      app_service_name: ${{ steps.app_service_name.outputs.app_service_name }}
+      app_service_name: ${{ steps.app_service_name.outputs.lowercase }}
     steps:
       - uses: hashicorp/setup-terraform@v1
         with:
@@ -36,7 +36,9 @@ jobs:
         run: terraform apply --auto-approve
 
       - id: app_service_name
-        run: echo "::set-output name=app_service_name::$(terraform output app_service_name)"
+        uses: ASzc/change-string-case-action@v1
+        with:
+            string: $(terraform output app_service_name)
         
   build-and-deploy:
     needs: setup-infra
@@ -66,7 +68,7 @@ jobs:
       - name: Deploy
         uses: azure/webapps-deploy@v2
         with:
-          app-name: dotnetcd-as
+          app-name: '${{ needs.setup-infra.outputs.app_service_name }}'
           package: '${{ env.AZURE_WEBAPP_PATH }}'
       
       - name: Azure Logout
