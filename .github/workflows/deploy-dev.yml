@@ -19,7 +19,7 @@ jobs:
   setup-infra:
     runs-on: ubuntu-latest
     outputs: 
-      app_service_name: ${{ steps.app_service_name.outputs.lowercase }}
+      app_service_name: ${{ steps.terraform_output.outputs.app_service_name }}
     steps:
       - uses: hashicorp/setup-terraform@v1
         with:
@@ -36,12 +36,7 @@ jobs:
         run: terraform apply --auto-approve
 
       - id: terraform_output
-        run: echo "::set-output name=app_service_name::$(terraform output app_service_name)"
-
-      - id: app_service_name
-        uses: ASzc/change-string-case-action@v1
-        with:
-            string: ${{ steps.terraform_output.outputs.app_service_name }}
+        run: echo "::set-output name=app_service_name::$(terraform output -raw app_service_name)"
         
   build-and-deploy:
     needs: setup-infra
