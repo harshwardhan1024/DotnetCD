@@ -16,12 +16,12 @@ provider "azurerm" {
 }
 
 resource "azurerm_resource_group" "rg" {
-    name = "DotnetCD-RG"
+    name = "DotnetCD-RG-${var.branch_name}"
     location = "Central India"
 }
 
 resource "azurerm_app_service_plan" "asp" {
-    name = "DotnetCD-ASP"
+    name = "DotnetCD-ASP-${var.branch_name}"
     location = azurerm_resource_group.rg.location
     resource_group_name = azurerm_resource_group.rg.name
 
@@ -32,7 +32,7 @@ resource "azurerm_app_service_plan" "asp" {
 }
 
 resource "azurerm_app_service" "as" {
-    name                = "DotnetCD-AS"
+    name                = "DotnetCD-AS-${var.branch_name}"
     location            = azurerm_resource_group.rg.location
     resource_group_name = azurerm_resource_group.rg.name
     app_service_plan_id = azurerm_app_service_plan.asp.id
