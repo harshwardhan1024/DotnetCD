@@ -18,8 +18,8 @@ jobs:
   set-vars:
     runs-on: ubuntu-latest
     outputs:
-      sku_tier: ${{ initialize_vars.outputs.sku_tier }}
-      sku_size: ${{ initialize_vars.outputs.sku_size }}
+      sku_tier: ${{ steps.initialize_vars.outputs.sku_tier }}
+      sku_size: ${{ steps.initialize_vars.outputs.sku_size }}
       site_config_use_32_bit_worker_process: ${{ initialize_vars.outputs.site_config_use_32_bit_worker_process }}
     steps:
       - name: Initialize Branch Variable
