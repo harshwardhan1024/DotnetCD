@@ -64,7 +64,7 @@ jobs:
         run: terraform apply \
           -var='branch_name=$BRANCH_NAME' \
           -var='app_service_plan_sku={"tier":"${{ needs.set_vars.outputs.sku_tier }}","size":"${{ needs.set_vars.outputs.sku_size }}"}' \
-          -var='app_service_site_config_use_32_bit_worker_process=${{ needs.set_vars.outputs.site_config_use_32_bit_worker_process }}'
+          -var='app_service_site_config_use_32_bit_worker_process=${{ needs.set_vars.outputs.site_config_use_32_bit_worker_process }}' \
           -auto-approve
 
       - id: terraform_output
