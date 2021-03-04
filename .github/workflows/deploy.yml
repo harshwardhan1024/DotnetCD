@@ -29,13 +29,13 @@ jobs:
         name: Initialize Variables
         run: |
           if [[ $BRANCH_NAME == 'master' ]]; then
-            echo '::set-output name=sku_tier::Standard'
-            echo '::set-output name=sku_size::S1'
-            echo '::set-output name=site_config_use_32_bit_worker_process=false'
+            echo "::set-output name=sku_tier::Standard"
+            echo "::set-output name=sku_size::S1"
+            echo "::set-output name=site_config_use_32_bit_worker_process::false"
           else
-            echo '::set-output name=sku_tier::Free'
-            echo '::set-output name=sku_size::F1'
-            echo '::set-output name=site_config_use_32_bit_worker_process=true'
+            echo "::set-output name=sku_tier::Free"
+            echo "::set-output name=sku_size::F1"
+            echo "::set-output name=site_config_use_32_bit_worker_process::true"
           fi
       
 
