@@ -15,26 +15,57 @@ env:
   ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
 
 jobs:
+  set-vars:
+    runs-on: ubuntu-latest
+    outputs:
+      sku_tier: ${{ initialize_vars.outputs.sku_tier }}
+      sku_size: ${{ initialize_vars.outputs.sku_size }}
+      site_config_use_32_bit_worker_process: ${{ initialize_vars.outputs.site_config_use_32_bit_worker_process }}
+    steps:
+      - name: Initialize Branch Variable
+        run: echo "BRANCH_NAME=$(echo ${{ github.ref }} | sed -e "s#refs/heads/##g")" >> $GITHUB_ENV
+
+      - id: initialize_vars
+        name: Initialize Variables
+        run: |
+          if [[ $BRANCH_NAME == 'master' ]]; then
+            echo '::set-output name=sku_tier::Standard'
+            echo '::set-output name=sku_size::S1'
+            echo '::set-output name=site_config_use_32_bit_worker_process=false'
+          else
+            echo '::set-output name=sku_tier::Free'
+            echo '::set-output name=sku_size::F1'
+            echo '::set-output name=site_config_use_32_bit_worker_process=true'
+          fi
+      
+
   setup-infra:
+    needs: set-vars
     runs-on: ubuntu-latest
     outputs: 
       app_service_name: ${{ steps.terraform_output.outputs.app_service_name }}
     steps:
-      - run: echo "BRANCH_NAME=$(echo ${{ github.ref }} | sed -e "s#refs/heads/##g")" >> $GITHUB_ENV
-
       - uses: hashicorp/setup-terraform@v1
         with:
           terraform_wrapper: false
       - uses: actions/checkout@v2
 
       - name: Terraform Init
-        run: terraform init -backend-config="access_key=${{ secrets.TFB_ACCESS_KEY }}" -backend-config="resource_group_name=${{ secrets.TFB_RESOURCE_GROUP_NAME }}" -backend-config="storage_account_name=${{ secrets.TFB_STORAGE_ACCOUNT_NAME }}" -backend-config="container_name=${{ secrets.TFB_CONTAINER_NAME }}"
+        run: terraform init \
+          -backend-config="access_key=${{ secrets.TFB_ACCESS_KEY }}" \
+          -backend-config="resource_group_name=${{ secrets.TFB_RESOURCE_GROUP_NAME }}" \
+          -backend-config="storage_account_name=${{ secrets.TFB_STORAGE_ACCOUNT_NAME }}" \
+          -backend-config="container_name=${{ secrets.TFB_CONTAINER_NAME }}"
         
       - name: Terraform Workspace Select
         run: terraform workspace select $BRANCH_NAME || terraform workspace new $BRANCH_NAME
       
       - name: Terraform Apply
-        run: terraform apply -var="branch_name=$BRANCH_NAME" -auto-approve
+        run: terraform apply \
+          -var='branch_name=$BRANCH_NAME' \
+          -var='app_service_plan_sku={"tier":"${{ needs.set_vars.outputs.sku_tier }}","size":"${{ needs.set_vars.outputs.sku_size }}"}' \
+          -var='app_service_site_config_use_32_bit_worker_process=${{ needs.set_vars.outputs.site_config_use_32_bit_worker_process }}'
+          -auto-approve
 
       - id: terraform_output
         run: echo "::set-output name=app_service_name::$(terraform output -raw app_service_name)"

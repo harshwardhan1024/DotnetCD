@@ -26,8 +26,8 @@ resource "azurerm_app_service_plan" "asp" {
     resource_group_name = azurerm_resource_group.rg.name
 
     sku {
-        tier = "Free"
-        size = "F1"
+        tier = var.app_service_plan_sku.tier
+        size = var.app_service_plan_sku.size
     }
 }
 
@@ -39,6 +39,6 @@ resource "azurerm_app_service" "as" {
 
     site_config {
         dotnet_framework_version = "v5.0"
-        use_32_bit_worker_process = true
+        use_32_bit_worker_process = var.app_service_site_config_use_32_bit_worker_process
     }
 }
