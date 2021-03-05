@@ -60,11 +60,7 @@ jobs:
         run: terraform workspace select ${{ env.BRANCH_NAME }} || terraform workspace new ${{ env.BRANCH_NAME }}
       
       - name: Terraform Apply
-        run: terraform apply \
-          -var='branch_name=${{ env.BRANCH_NAME }}' \
-          -var='app_service_plan_sku={"tier":"${{ needs.set_vars.outputs.sku_tier }}","size":"${{ needs.set_vars.outputs.sku_size }}"}' \
-          -var='app_service_site_config_use_32_bit_worker_process=${{ needs.set_vars.outputs.site_config_use_32_bit_worker_process }}' \
-          -auto-approve
+        run: terraform apply -var='branch_name=${{ env.BRANCH_NAME }}' -var='app_service_plan_sku={"tier":"${{ needs.set_vars.outputs.sku_tier }}","size":"${{ needs.set_vars.outputs.sku_size }}"}' -var='app_service_site_config_use_32_bit_worker_process=${{ needs.set_vars.outputs.site_config_use_32_bit_worker_process }}' -auto-approve
 
       - id: terraform_output
         run: echo "::set-output name=app_service_name::$(terraform output -raw app_service_name)"
