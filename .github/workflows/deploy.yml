@@ -25,6 +25,8 @@ jobs:
       - name: Initialize Branch Variable
         run: echo "BRANCH_NAME=$(echo ${{ github.ref }} | sed -e "s#refs/heads/##g")" >> $GITHUB_ENV
 
+      - run: echo ${{ env.BRANCH_NAME }}
+
       - id: initialize_vars
         name: Initialize Variables
         run: |
@@ -49,6 +51,8 @@ jobs:
         with:
           terraform_wrapper: false
       - uses: actions/checkout@v2
+
+      - run: echo ${{ env.BRANCH_NAME }}
 
       - name: Terraform Init
         run: terraform init -backend-config="access_key=${{ secrets.TFB_ACCESS_KEY }}" -backend-config="resource_group_name=${{ secrets.TFB_RESOURCE_GROUP_NAME }}" -backend-config="storage_account_name=${{ secrets.TFB_STORAGE_ACCOUNT_NAME }}" -backend-config="container_name=${{ secrets.TFB_CONTAINER_NAME }}"
