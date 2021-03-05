@@ -45,6 +45,8 @@ jobs:
     outputs: 
       app_service_name: ${{ steps.terraform_output.outputs.app_service_name }}
     steps:
+      - run: echo ${{ steps.initialize_vars.outputs.sku_tier }}
+
       - name: Initialize Env Variables
         run: echo "BRANCH_NAME=$(echo ${{ github.ref }} | sed -e "s#refs/heads/##g")" >> $GITHUB_ENV
 
