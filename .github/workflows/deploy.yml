@@ -21,9 +21,8 @@ jobs:
       sku_tier: ${{ steps.initialize_vars.outputs.sku_tier }}
       sku_size: ${{ steps.initialize_vars.outputs.sku_size }}
       site_config_use_32_bit_worker_process: ${{ steps.initialize_vars.outputs.site_config_use_32_bit_worker_process }}
-      branch_name: ${{ env.BRANCH_NAME }}
     steps:
-      - name: Initialize Branch Variable
+      - name: Initialize Env Variables
         run: echo "BRANCH_NAME=$(echo ${{ github.ref }} | sed -e "s#refs/heads/##g")" >> $GITHUB_ENV
 
       - id: initialize_vars
@@ -46,6 +45,9 @@ jobs:
     outputs: 
       app_service_name: ${{ steps.terraform_output.outputs.app_service_name }}
     steps:
+      - name: Initialize Env Variables
+        run: echo "BRANCH_NAME=$(echo ${{ github.ref }} | sed -e "s#refs/heads/##g")" >> $GITHUB_ENV
+
       - uses: hashicorp/setup-terraform@v1
         with:
           terraform_wrapper: false
@@ -55,11 +57,11 @@ jobs:
         run: terraform init -backend-config="access_key=${{ secrets.TFB_ACCESS_KEY }}" -backend-config="resource_group_name=${{ secrets.TFB_RESOURCE_GROUP_NAME }}" -backend-config="storage_account_name=${{ secrets.TFB_STORAGE_ACCOUNT_NAME }}" -backend-config="container_name=${{ secrets.TFB_CONTAINER_NAME }}"
         
       - name: Terraform Workspace Select
-        run: terraform workspace select ${{ needs.set-vars.branch_name }} || terraform workspace new ${{ needs.set-vars.branch_name }}
+        run: terraform workspace select ${{ env.BRANCH_NAME }} || terraform workspace new ${{ env.BRANCH_NAME }}
       
       - name: Terraform Apply
         run: terraform apply \
-          -var='branch_name=${{ needs.set-vars-branch_name }}' \
+          -var='branch_name=${{ env.BRANCH_NAME }}' \
           -var='app_service_plan_sku={"tier":"${{ needs.set_vars.outputs.sku_tier }}","size":"${{ needs.set_vars.outputs.sku_size }}"}' \
           -var='app_service_site_config_use_32_bit_worker_process=${{ needs.set_vars.outputs.site_config_use_32_bit_worker_process }}' \
           -auto-approve
